@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#f4f7f6">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="הכסף שלי">
+  <meta name="description" content="ניהול אישי, פרטי ולא מקוון של הכנסות והוצאות">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="styles.css?v=1.0.6">
+  <title>הכסף שלי</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">הדשבורד שלי</p>
+        <h1>הכסף שלי</h1>
+      </div>
+      <button class="icon-button" id="settingsButton" aria-label="פתיחת הגדרות">⚙️</button>
+    </header>
+
+    <main>
+      <section class="month-switcher card" aria-label="בחירת חודש">
+        <button class="month-arrow" id="nextMonth" dir="ltr" aria-label="החודש הבא">›</button>
+        <button class="month-title-button" id="monthPickerButton" aria-haspopup="dialog">
+          <span id="monthTitle">—</span>
+          <small>לחיצה לבחירת חודש ושנה</small>
+        </button>
+        <button class="month-arrow" id="previousMonth" dir="ltr" aria-label="החודש הקודם">‹</button>
+      </section>
+
+      <section class="summary-grid" aria-label="סיכום חודשי">
+        <button class="summary-card income-card summary-action" id="incomeCard" type="button" aria-haspopup="dialog">
+          <span class="summary-icon">↙</span><span class="summary-link-hint" aria-hidden="true">צפייה</span><span class="summary-label">הכנסות</span><strong id="incomeTotal" class="money-value" dir="ltr">₪0</strong>
+        </button>
+        <button class="summary-card expense-card summary-action" id="expenseCard" type="button" aria-haspopup="dialog">
+          <span class="summary-icon">↗</span><span class="summary-link-hint" aria-hidden="true">צפייה</span><span class="summary-label">הוצאות</span><strong id="expenseTotal" class="money-value" dir="ltr">₪0</strong>
+        </button>
+        <article class="summary-card balance-card">
+          <span class="summary-icon">=</span><p>מאזן חודשי</p><strong id="balanceTotal" class="money-value" dir="ltr">₪0</strong>
+        </article>
+      </section>
+
+      <section class="dashboard-grid">
+        <article class="card chart-card">
+          <div class="section-heading"><div><p class="eyebrow">החודש הנבחר</p><h2>הוצאות לפי קטגוריה</h2></div></div>
+          <div class="donut-layout">
+            <div class="donut-wrap"><svg id="expenseDonut" viewBox="0 0 200 200" role="img" aria-label="גרף הוצאות לפי קטגוריות"></svg><div class="donut-center"><span>סה״כ</span><strong id="donutTotal" class="money-value" dir="ltr">₪0</strong></div></div>
+            <div id="donutLegend" class="chart-legend"></div>
+          </div>
+        </article>
+
+        <article class="card transactions-card">
+          <div class="section-heading">
+            <div><p class="eyebrow">הפעילות שלך</p><h2>תנועות אחרונות</h2></div>
+            <button class="text-button" id="openSearchButton">חיפוש וסינון</button>
+          </div>
+          <div id="transactionsList" class="transaction-list"></div>
+          <button class="secondary-button full-width" id="showAllTransactions">הצגת כל התנועות בחודש</button>
+        </article>
+      </section>
+
+      <section class="card reports-card">
+        <div class="section-heading">
+          <div><p class="eyebrow">מבט רחב</p><h2>דוחות שנתיים</h2></div>
+          <select id="reportYear" class="compact-select" aria-label="שנת הדוח"></select>
+        </div>
+        <div class="annual-summary" id="annualSummary"></div>
+        <div class="report-grid">
+          <div class="report-chart">
+            <h3>הכנסות מול הוצאות</h3>
+            <div class="chart-scroll"><svg id="comparisonChart" viewBox="0 0 760 280" role="img" aria-label="השוואה חודשית בין הכנסות להוצאות"></svg></div>
+            <div class="chart-key" aria-label="מקרא הגרף">
+              <span class="chart-key-item"><i class="chart-key-dot income-dot" aria-hidden="true"></i><span>הכנסות</span></span>
+              <span class="chart-key-item"><i class="chart-key-dot expense-dot" aria-hidden="true"></i><span>הוצאות</span></span>
+            </div>
+          </div>
+          <div class="report-chart">
+            <h3>מאזן חודשי</h3>
+            <div class="chart-scroll"><svg id="balanceChart" viewBox="0 0 760 260" role="img" aria-label="מאזן חודשי לאורך השנה"></svg></div>
+          </div>
+        </div>
+        <div class="top-categories"><h3>קטגוריות ההוצאה המובילות</h3><div id="topCategories"></div></div>
+      </section>
+    </main>
+
+    <button class="fab" id="addTransactionButton"><span>＋</span> הוספת תנועה</button>
+  </div>
+
+  <div id="modalRoot"></div>
+  <div id="toastRegion" class="toast-region" aria-live="polite"></div>
+
+  <template id="modalTemplate">
+    <div class="modal-backdrop" data-close-modal>
+      <section class="modal" role="dialog" aria-modal="true">
+        <header class="modal-header"><div><p class="eyebrow modal-eyebrow"></p><h2 class="modal-title"></h2></div><button class="icon-button close-modal" aria-label="סגירה">✕</button></header>
+        <div class="modal-body"></div>
+      </section>
+    </div>
+  </template>
+
+  <script type="module" src="js/app.js?v=1.0.6"></script>
+</body>
+</html>
